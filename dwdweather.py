@@ -206,8 +206,8 @@ class DwdWeather(object):
                     continue
                 if self.verbosity > 1:
                     print("Reading file %s/%s" % (path, filename))
-                f = StringIO()
-                ftp.retrbinary('RETR ' + filename, f.write)
+                f = StringIO()  # https://stackoverflow.com/questions/4696413/ftp-retrbinary-help-python
+                ftp.retrbinary('RETR ' + filename, lambda data: f.write(data))  
                 self.import_station(f.getvalue())
                 f.close()
         
