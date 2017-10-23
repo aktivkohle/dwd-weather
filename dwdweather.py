@@ -109,6 +109,7 @@ class DwdWeather(object):
         - user
         - passwd
         - cachepath
+        - verbosity
         """
 
         cp = None
@@ -192,7 +193,8 @@ class DwdWeather(object):
         if self.verbosity > 0:
             print("Importing stations data from FTP server")
         ftp = FTP(self.server)
-        ftp.login(self.user, self.passwd)
+        # ftp.login(self.user, self.passwd)
+        ftp.login()
         for cat in self.categories:
             if cat == "solar":
                 # workaround - solar has no subdirs
@@ -209,10 +211,11 @@ class DwdWeather(object):
                 if self.verbosity > 1:
                     print("Reading file %s/%s" % (path, filename))
                 if sys.version_info < (3, 0):
-                	f = StringIO()
+                    f = StringIO()
                 else:
                     f = BytesIO()  # https://stackoverflow.com/questions/4696413/ftp-retrbinary-help-python
-                ftp.retrbinary('RETR ' + filename, lambda data: f.write(data))  
+                # ftp.retrbinary('RETR ' + filename, lambda data: f.write(data))
+                ftp.retrbinary('RETR ' + filename, open('RETR ' + filename, 'wb').write)
                 self.import_station(f.getvalue())
                 f.close()
         
@@ -311,7 +314,8 @@ class DwdWeather(object):
         if historic:
             timeranges.append("historical")
         ftp = FTP(self.server)
-        ftp.login(self.user, self.passwd)
+        # ftp.login(self.user, self.passwd)
+        ftp.login()
         importfiles = []
 
         def download_and_import(path, filename, cat, timerange=None):
