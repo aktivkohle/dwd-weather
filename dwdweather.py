@@ -9,7 +9,11 @@ import sqlite3
 from datetime import datetime
 import math
 import re
-from io import StringIO
+# https://stackoverflow.com/questions/11914472/stringio-in-python3
+try:                                        
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 """
@@ -202,7 +206,7 @@ class DwdWeather(object):
                     continue
                 if self.verbosity > 1:
                     print("Reading file %s/%s" % (path, filename))
-                f = StringIO.StringIO()
+                f = StringIO()
                 ftp.retrbinary('RETR ' + filename, f.write)
                 self.import_station(f.getvalue())
                 f.close()
@@ -539,7 +543,7 @@ class DwdWeather(object):
         Return stations list as CSV
         """
         import csv
-        csvfile = StringIO.StringIO()
+        csvfile = StringIO()
         # assemble field list
         headers = ["station_id", "date_start", "date_end",
             "geo_lon", "geo_lat", "height", "name"]
