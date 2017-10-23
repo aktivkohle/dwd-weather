@@ -569,7 +569,7 @@ if __name__ == "__main__":
     def get_station(args):
         dw = DwdWeather(cachepath=args.cachepath, verbosity=args.verbosity)
         import json
-        print json.dumps(dw.nearest_station(lon=args.lon, lat=args.lat), indent=4)
+        print (json.dumps(dw.nearest_station(lon=args.lon, lat=args.lat), indent=4))
 
     def get_stations(args):
         dw = DwdWeather(cachepath=args.cachepath, verbosity=args.verbosity)
@@ -581,7 +581,7 @@ if __name__ == "__main__":
         elif args.type == "plain":
             output = dw.stations_csv(delimiter="\t")
         if args.output_path is None:
-            print output
+            print (output)
         else:
             f = open(args.output_path, "wb")
             f.write(output)
@@ -591,7 +591,7 @@ if __name__ == "__main__":
         hour = datetime.strptime(str(args.hour), "%Y%m%d%H")
         dw = DwdWeather(cachepath=args.cachepath, verbosity=args.verbosity)
         import json
-        print json.dumps(dw.query(args.station_id, hour), indent=4)
+        print (json.dumps(dw.query(args.station_id, hour), indent=4))
 
     import argparse
     argparser = argparse.ArgumentParser(prog="dwdweather",
