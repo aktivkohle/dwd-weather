@@ -10,10 +10,12 @@ from datetime import datetime
 import math
 import re
 # https://stackoverflow.com/questions/11914472/stringio-in-python3
-try:                                        
+# If you need to write code that runs on 2.7 and 3.x, use the BytesIO class in the io module.
+# https://stackoverflow.com/questions/6479100/python-stringio-replacement-that-works-with-bytes-instead-of-strings/6481034#6481034
+if sys.version_info < (3, 0):
     from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+else:
+    from io import BytesIO
 
 
 """
@@ -206,8 +208,11 @@ class DwdWeather(object):
                     continue
                 if self.verbosity > 1:
                     print("Reading file %s/%s" % (path, filename))
-                f = StringIO()  # https://stackoverflow.com/questions/4696413/ftp-retrbinary-help-python
-                ftp.retrbinary('RETR ' + filename, lambda data: f.write(data) if sys.version_info < (3, 0) else f.write(data.decode()))  
+                if sys.version_info < (3, 0):
+                	f = StringIO()
+                else:
+                    f = BytesIO()  # https://stackoverflow.com/questions/4696413/ftp-retrbinary-help-python
+                ftp.retrbinary('RETR ' + filename, lambda data: f.write(data))  
                 self.import_station(f.getvalue())
                 f.close()
         
@@ -217,10 +222,13 @@ class DwdWeather(object):
         Takes the content of one station metadata file
         and imports it into the database
         """
+        if sys.version_info >= (3, 0):
+            content = content.decode("latin1")
         content = content.strip()
         content = content.replace("\r", "")
         content = content.replace("\n\n", "\n")
-        content = content.decode("latin1")
+        if sys.version_info < (3, 0):        
+            content = content.decode("latin1")
         insert_sql = """INSERT OR IGNORE INTO stations
             (station_id, date_start, date_end, geo_lon, geo_lat, height, name, state)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"""
