@@ -9,7 +9,7 @@ import sqlite3
 from datetime import datetime
 import math
 import re
-import StringIO
+from io import StringIO
 
 
 """
